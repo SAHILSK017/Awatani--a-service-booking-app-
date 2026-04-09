@@ -1,145 +1,78 @@
-
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext.jsx';
-import Loader from '../../components/Loader.jsx';
-import { Mail, Lock } from 'lucide-react';
-import { getRedirectPath } from '../../utils/roleRedirect.js';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Lock, Mail, ChevronRight } from 'lucide-react';
+import { Card, CardContent } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import { motion } from 'framer-motion';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({});
-  
-  const { login, user } = useAuth();
+  const [role, setRole] = useState('user');
   const navigate = useNavigate();
 
-  // ✅ Auto redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      navigate(getRedirectPath(user.role));
-    }
-  }, [user]);
-
-  // ✅ Validation function
-  const validate = () => {
-    const errors = {};
-
-    if (!formData.email) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Invalid email format';
-    }
-
-    if (!formData.password) {
-      errors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
-    }
-
-    return errors;
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    setError('');
-    
-    const errors = validate();
-    setFieldErrors(errors);
+    const user = {
+      name: role === 'admin' ? 'Admin User' : role === 'worker' ? 'John Worker' : 'Sahil User',
+      role: role,
+    };
+    localStorage.setItem('user', JSON.stringify(user));
 
-    // ❌ Stop if validation fails
-    if (Object.keys(errors).length > 0) return;
-
-    setLoading(true);
-
-    const result = await login(formData.email, formData.password);
-
-    if (result.success) {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-      navigate(getRedirectPath(storedUser.role));
-    } else {
-      setError(result.message || 'Invalid email or password');
-    }
-
-    setLoading(false);
+    if (role === 'admin') navigate('/admin/dashboard');
+    else if (role === 'worker') navigate('/worker/dashboard');
+    else navigate('/user/home');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="w-full max-w-md"
+      >
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Avatani
+          </h1>
+          <p className="text-gray-500 mt-2 text-sm">Sign in to your account</p>
+        </div>
 
-        <h1 className="text-3xl font-bold text-center mb-6">Login</h1>
+        <Card>
+          <CardContent className="pt-6">
+            <form onSubmit={handleLogin} className="space-y-6">
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Email Address</label>
+                <Input icon={Mail} type="email" placeholder="you@example.com" required defaultValue="demo@avatani.com" />
+              </div>
 
-        {/* 🔴 GLOBAL ERROR */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-4 text-sm">
-            {error}
-          </div>
-        )}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Password</label>
+                <Input icon={Lock} type="password" placeholder="••••••••" required defaultValue="password" />
+              </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Select Role (Mock Auth)</label>
+                <select 
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value="user">User</option>
+                  <option value="worker">Worker</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
 
-          {/* EMAIL */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter email"
-              />
-            </div>
-            {fieldErrors.email && (
-              <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>
-            )}
-          </div>
-
-          {/* PASSWORD */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-              <input
-                type="password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter password"
-              />
-            </div>
-            {fieldErrors.password && (
-              <p className="text-red-500 text-xs mt-1">{fieldErrors.password}</p>
-            )}
-          </div>
-
-          {/* BUTTON */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-
-        <p className="text-sm text-center mt-4">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 font-semibold">
-            Register
-          </Link>
-        </p>
-
-      </div>
-
-      {loading && <Loader />}
+              <Button type="submit" className="w-full group">
+                Sign In
+                <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 };

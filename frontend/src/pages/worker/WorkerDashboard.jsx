@@ -1,150 +1,72 @@
-import { useState, useEffect } from 'react';
-import Loader from '../../components/Loader.jsx';
-import { getWorkerBookings } from '../../services/bookingService.js';
-import { formatPrice, getStatusColor } from '../../utils/helpers.js';
+import React from 'react';
+import { Card, CardContent } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { Badge } from '../../components/ui/Badge';
+import { mockData } from '../../data/mockData';
+import { Briefcase, CheckCircle, DollarSign, MapPin, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
-import {
-  BookOpen,
-  Clock,
-  CheckCircle,
-  DollarSign,
-  TrendingUp,
-  MapPin,
-  Star,
-} from 'lucide-react';
 
 const WorkerDashboard = () => {
-  const [stats, setStats] = useState({
-    pending: 0,
-    accepted: 0,
-    completed: 0,
-    revenue: 0,
-    rating: 4.8,
-  });
+  const { workerStats, availableJobs } = mockData;
 
-  const [loading, setLoading] = useState(true);
-  const [recentBookings, setRecentBookings] = useState([]);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const bookings = await getWorkerBookings(); // 🔥 FIXED
-
-      console.log("WORKER BOOKINGS:", bookings);
-
-      const pending = bookings.filter(b => b.status === 'pending').length;
-      const accepted = bookings.filter(b => b.status === 'accepted').length;
-      const completed = bookings.filter(b => b.status === 'completed').length;
-
-      const revenue = bookings.reduce(
-        (sum, b) =>
-          b.status === 'completed'
-            ? sum + (b.service?.price || 0)
-            : sum,
-        0
-      );
-
-      setStats({
-        pending,
-        accepted,
-        completed,
-        revenue,
-        rating: 4.8,
-      });
-
-      setRecentBookings(bookings.slice(0, 5));
-    } catch (error) {
-      console.error('Error fetching worker data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) return <Loader />;
+  const statCards = [
+    { title: 'Total Jobs', value: workerStats.totalJobs, icon: Briefcase, color: 'text-indigo-600', bg: 'bg-indigo-100' },
+    { title: 'Completed', value: workerStats.completedJobs, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100' },
+    { title: 'Earnings', value: workerStats.earnings, icon: DollarSign, color: 'text-yellow-600', bg: 'bg-yellow-100' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 py-12">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Worker Dashboard</h1>
+        <p className="text-gray-500 text-sm mt-1">Manage your active jobs and track earnings.</p>
+      </div>
 
-        {/* HEADER */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-3xl font-bold">Worker Dashboard</h1>
-          <p className="text-gray-600 mt-2">
-            Manage your bookings and earnings
-          </p>
-        </motion.div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {statCards.map((stat, idx) => (
+          <motion.div key={idx} whileHover={{ y: -4 }}>
+            <Card>
+              <CardContent className="flex items-center p-6">
+                <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} mr-4`}>
+                  <stat.icon size={24} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">{stat.title}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
 
-        {/* STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <StatCard title="Pending" value={stats.pending} icon={Clock} />
-          <StatCard title="Accepted" value={stats.accepted} icon={BookOpen} />
-          <StatCard title="Completed" value={stats.completed} icon={CheckCircle} />
-        </div>
-
-        {/* EXTRA STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <StatCard title="Total Earnings" value={formatPrice(stats.revenue)} icon={DollarSign} />
-          <StatCard title="Rating" value={stats.rating} icon={Star} />
-        </div>
-
-        {/* RECENT BOOKINGS */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-xl font-bold mb-4">Recent Bookings</h2>
-
-          {recentBookings.length === 0 ? (
-            <p>No bookings yet</p>
-          ) : (
-            recentBookings.map((booking) => (
-              <div
-                key={booking._id}
-                className="border p-4 mb-4 rounded"
-              >
-                <h3 className="font-semibold">
-                  {booking.service?.name}
-                </h3>
-
-                <p>{booking.user?.name}</p>
-
-                <p className="flex items-center gap-2 text-sm">
-                  <MapPin size={14} />
-                  {booking.address}
-                </p>
-
-                <p className="text-green-600 font-bold">
-                  {formatPrice(booking.service?.price)}
-                </p>
-
-                <span
-                  className={`px-2 py-1 text-sm rounded ${getStatusColor(
-                    booking.status
-                  )}`}
-                >
-                  {booking.status}
-                </span>
-              </div>
-            ))
-          )}
+      {/* Available Jobs List */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Available Jobs near you</h2>
+        <div className="space-y-4">
+          {availableJobs.map((job) => (
+            <Card key={job.id} className="hover:border-indigo-100 transition-colors">
+              <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">{job.title}</h3>
+                    <Badge variant="indigo">{job.price}</Badge>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <span className="flex items-center gap-1"><MapPin size={14} /> {job.location}</span>
+                    <span className="flex items-center gap-1"><Calendar size={14} /> {job.date}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Button variant="secondary" className="flex-1 sm:flex-none">Reject</Button>
+                  <Button className="flex-1 sm:flex-none">Accept Job</Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
-    </div>
-  );
-};
-
-// 🔥 REUSABLE STAT CARD
-const StatCard = ({ title, value, icon: Icon }) => {
-  return (
-    <div className="bg-white p-6 rounded-xl shadow text-center">
-      <Icon className="mx-auto mb-2 text-emerald-600" size={28} />
-      <p className="text-2xl font-bold">{value}</p>
-      <p className="text-gray-600">{title}</p>
     </div>
   );
 };

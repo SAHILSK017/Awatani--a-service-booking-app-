@@ -1,21 +1,26 @@
+import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
-import Loader from '../components/Loader.jsx';
+import { DashboardLayout } from '../components/layout/DashboardLayout';
 
-const ProtectedRoute = ({ allowedRoles = null }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return <Loader />;
+const ProtectedRoute = ({ allowedRoles }) => {
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
 
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/login" replace />;
+    // Redirect to their respective dashboards based on role
+    if (user.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
+    if (user.role === 'worker') return <Navigate to="/worker/dashboard" replace />;
+    return <Navigate to="/user/home" replace />;
   }
 
-  return <Outlet />; // ✅ THIS IS THE FIX
+  return (
+    <DashboardLayout user={user}>
+      <Outlet />
+    </DashboardLayout>
+  );
 };
 
 export default ProtectedRoute;
