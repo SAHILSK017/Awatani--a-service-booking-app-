@@ -1,20 +1,76 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { mockData } from '../../data/mockData';
-import { Users, Briefcase, Activity, DollarSign, MoreVertical } from 'lucide-react';
+import { Users, Briefcase, Activity, IndianRupee, MoreVertical, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getAllUsers, getAllBookings, getAllServices } from '../../services/adminService';
 
 const AdminDashboard = () => {
-  const { adminStats, users, workers } = mockData;
+  const [stats, setStats] = useState({ totalUsers: 0, totalWorkers: 0, totalRevenue: 0, activeServices: 0 });
+  const [usersList, setUsersList] = useState([]);
+  const [workersList, setWorkersList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [usersData, bookingsData, servicesData] = await Promise.all([
+          getAllUsers(),
+          getAllBookings(),
+          getAllServices()
+        ]);
+        
+        let revenue = 0;
+        bookingsData.forEach(b => {
+          if (b.status === 'completed') {
+            revenue += b.service?.price || 0;
+          }
+        });
+
+        const registeredUsers = usersData.filter(u => u.role === 'user');
+        const registeredWorkers = usersData.filter(u => u.role === 'worker');
+
+        setStats({
+          totalUsers: registeredUsers.length,
+          totalWorkers: registeredWorkers.length,
+          totalRevenue: revenue,
+          activeServices: servicesData.length
+        });
+        
+        setUsersList(registeredUsers.slice(0, 5)); // First 5 for preview table
+        
+        // Calculate jobs completed per worker for the top workers table
+        const workerStatsMap = {};
+        registeredWorkers.forEach(w => workerStatsMap[w._id] = { ...w, jobsCompleted: 0 });
+        bookingsData.forEach(b => {
+          if (b.status === 'completed' && b.worker && workerStatsMap[b.worker._id]) {
+            workerStatsMap[b.worker._id].jobsCompleted += 1;
+          }
+        });
+        
+        const sortedWorkers = Object.values(workerStatsMap).sort((a, b) => b.jobsCompleted - a.jobsCompleted);
+        setWorkersList(sortedWorkers.slice(0, 5));
+
+      } catch (err) {
+        console.error("Failed to load admin dashboard data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const statCards = [
-    { title: 'Total Users', value: adminStats.totalUsers, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-100' },
-    { title: 'Total Workers', value: adminStats.totalWorkers, icon: Briefcase, color: 'text-purple-600', bg: 'bg-purple-100' },
-    { title: 'Active Services', value: adminStats.activeServices, icon: Activity, color: 'text-blue-600', bg: 'bg-blue-100' },
-    { title: 'Revenue', value: adminStats.totalRevenue, icon: DollarSign, color: 'text-green-600', bg: 'bg-green-100' },
+    { title: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-100' },
+    { title: 'Total Workers', value: stats.totalWorkers, icon: Briefcase, color: 'text-purple-600', bg: 'bg-purple-100' },
+    { title: 'Active Services', value: stats.activeServices, icon: Activity, color: 'text-blue-600', bg: 'bg-blue-100' },
+    { title: 'Revenue', value: `₹${stats.totalRevenue}`, icon: IndianRupee, color: 'text-green-600', bg: 'bg-green-100' },
   ];
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-indigo-600 h-8 w-8" /></div>;
+  }
 
   return (
     <div className="space-y-8">
@@ -59,14 +115,14 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                {usersList.map((user) => (
+                  <tr key={user._id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900">{user.name}</div>
                       <div className="text-gray-500">{user.email}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <Badge variant={user.status === 'Active' ? 'success' : 'default'}>{user.role}</Badge>
+                      <Badge variant="success" className="capitalize">{user.role}</Badge>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button className="text-gray-400 hover:text-gray-600"><MoreVertical size={16} /></button>
@@ -89,20 +145,20 @@ const AdminDashboard = () => {
               <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
                 <tr>
                   <th className="px-6 py-3 font-medium">Worker</th>
-                  <th className="px-6 py-3 font-medium text-center">Jobs</th>
-                  <th className="px-6 py-3 font-medium text-center">Rating</th>
+                  <th className="px-6 py-3 font-medium text-center">Jobs Completed</th>
+                  <th className="px-6 py-3 font-medium text-center">Account</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {workers.map((worker) => (
-                  <tr key={worker.id} className="hover:bg-gray-50/50 transition-colors">
+                {workersList.map((worker) => (
+                  <tr key={worker._id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900">{worker.name}</div>
                       <div className="text-gray-500">{worker.email}</div>
                     </td>
                     <td className="px-6 py-4 text-center font-medium">{worker.jobsCompleted}</td>
                     <td className="px-6 py-4 text-center">
-                      <Badge variant="warning">⭐ {worker.rating}</Badge>
+                      <Badge variant="indigo">Active</Badge>
                     </td>
                   </tr>
                 ))}

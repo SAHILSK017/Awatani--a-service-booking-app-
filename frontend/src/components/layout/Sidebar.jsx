@@ -28,6 +28,7 @@ const workerMenu = [
   { name: 'Available Jobs', path: '/worker/available-jobs', icon: Briefcase },
   { name: 'My Jobs', path: '/worker/bookings', icon: CalendarCheck },
   { name: 'Earnings', path: '/worker/earnings', icon: CreditCard },
+  { name: 'Profile', path: '/worker/profile', icon: User },
 ];
 
 const adminMenu = [
