@@ -42,21 +42,19 @@ const ManageWorkers = () => {
     fetchWorkersAndStats();
   }, []);
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-indigo-600 h-8 w-8" /></div>;
-  }
+  if (loading) return <div className="flex justify-center items-center h-screen bg-neutral-950"><Loader2 className="animate-spin text-indigo-500 h-10 w-10" /></div>;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Manage Workforce</h1>
-        <p className="text-gray-500 text-sm mt-1">Monitor your service providers and their completed job stats.</p>
+    <div className="min-h-screen bg-neutral-950 text-white font-sans pb-20 pt-10 px-8">
+      <div className="mb-10">
+        <h1 className="text-3xl font-extrabold text-white tracking-tight">Workforce Command</h1>
+        <p className="text-neutral-400 mt-2">Monitor worker assignments and payload value generation.</p>
       </div>
 
-      <Card className="overflow-hidden">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-[2rem] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
+          <table className="w-full text-left">
+            <thead className="bg-neutral-950/50 text-neutral-400 text-xs uppercase tracking-widest border-b border-neutral-800">
               <tr>
                 <th className="px-6 py-4 font-medium">Worker Database ID</th>
                 <th className="px-6 py-4 font-medium">Profile Linked</th>
@@ -66,40 +64,36 @@ const ManageWorkers = () => {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {workers.map((worker) => (
-                <tr key={worker._id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 text-xs font-mono text-gray-400">
+                <tr key={worker._id} className="hover:bg-neutral-900/50 transition-colors border-b border-neutral-800 last:border-0 font-medium">
+                  <td className="px-6 py-5 text-xs font-mono text-neutral-600">
                     {worker._id}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
-                        <Briefcase size={16} />
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-2xl border border-indigo-500/20">
+                        <Briefcase size={20} />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{worker.name}</div>
-                        <div className="text-gray-500 text-xs">{worker.email}</div>
+                        <div className="text-white text-base font-bold">{worker.name}</div>
+                        <div className="text-neutral-500 text-sm font-normal tracking-wide">{worker.email}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center">
-                    <Badge variant={worker.jobsCompleted > 0 ? 'success' : 'indigo'}>
+                  <td className="px-6 py-5 text-center">
+                    <Badge variant={worker.jobsCompleted > 0 ? 'success' : 'indigo'} className="bg-emerald-900/40 text-emerald-300 border border-emerald-700/50 px-3 py-1">
                       {worker.jobsCompleted}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 text-right font-bold text-gray-900">
+                  <td className="px-6 py-5 text-right text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">
                     ₹{worker.totalGenerated}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {workers.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
-              No workers found. Assign roles or onboard accounts!
-            </div>
-          )}
+          {workers.length === 0 && <div className="p-12 text-center text-neutral-500 text-lg">No workers onboarded.</div>}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

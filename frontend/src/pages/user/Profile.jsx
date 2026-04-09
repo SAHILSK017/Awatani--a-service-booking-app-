@@ -1,91 +1,97 @@
-import React from 'react';
-import { Card, CardContent } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { Badge } from '../../components/ui/Badge';
-import { User, Mail, Shield, LogOut } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { LogOut, User, Mail, Shield, Camera, Edit2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { getCurrentUser, logout } from '../../services/authService';
 
 const Profile = () => {
-  const navigate = useNavigate();
-  const user = getCurrentUser() || {};
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) setUser(JSON.parse(savedUser));
+  }, []);
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
   };
 
+  if (!user) return null;
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage your account settings and preferences.</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        
-        {/* Left Column: Avatar & Quick Snapshot */}
-        <div className="md:col-span-1 space-y-6">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <Card>
-              <CardContent className="p-6 text-center">
-                <div className="w-24 h-24 mx-auto bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-4 border-4 border-white shadow-sm">
-                  <User size={40} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">{user.name || 'User'}</h3>
-                <p className="text-gray-500 text-sm mb-4">{user.email}</p>
-                <Badge variant="indigo" className="capitalize px-4 py-1 text-sm">
-                  {user.role || 'Member'}
-                </Badge>
-              </CardContent>
-            </Card>
-          </motion.div>
+    <div className="min-h-[90vh] bg-gray-50 flex items-center justify-center p-6 sm:p-12">
+      <motion.div 
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', damping: 20 }}
+        className="max-w-2xl w-full bg-white rounded-[3rem] shadow-2xl shadow-indigo-100 overflow-hidden border border-gray-100 relative"
+      >
+        {/* Profile Header Block */}
+        <div className="h-48 bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 relative overflow-hidden">
+            <div className="absolute top-[-50px] right-[-50px] w-64 h-64 bg-white/10 rounded-full blur-3xl mix-blend-overlay" />
+            <div className="absolute bottom-[-50px] left-[-20px] w-40 h-40 bg-black/10 rounded-full blur-2xl mix-blend-overlay" />
         </div>
 
-        {/* Right Column: Settings Form */}
-        <div className="md:col-span-2 space-y-6">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card>
-              <div className="px-6 py-4 border-b border-gray-50">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Shield size={18} className="text-indigo-600" /> Account Details
-                </h3>
-              </div>
-              <CardContent className="p-6 space-y-6">
+        {/* Profile Content */}
+        <div className="px-10 pb-12">
+            <div className="relative -mt-20 mb-8 flex justify-between items-end">
+                <div className="relative group">
+                    <div className="w-40 h-40 rounded-full border-8 border-white bg-gradient-to-r from-gray-100 to-gray-200 overflow-hidden shadow-xl flex items-center justify-center">
+                        {user.profileImage ? (
+                            <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                            <User size={64} className="text-gray-400" />
+                        )}
+                    </div>
+                    <button className="absolute bottom-2 right-2 p-3 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-colors opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 duration-200">
+                        <Camera size={18} />
+                    </button>
+                </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Full Name</label>
-                    <Input icon={User} defaultValue={user.name} disabled className="bg-gray-50" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Email Address</label>
-                    <Input icon={Mail} defaultValue={user.email} disabled className="bg-gray-50" />
-                  </div>
+                <button className="mb-4 px-6 py-2.5 bg-indigo-50 text-indigo-700 rounded-full font-bold text-sm tracking-wide hover:bg-indigo-100 transition-colors flex items-center gap-2">
+                    <Edit2 size={16} /> Edit Profile
+                </button>
+            </div>
+
+            <div className="mb-10 lg:pl-4 border-l-4 border-indigo-500 rounded-l-md">
+                <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-none mb-2 ml-4">
+                    {user.name}
+                </h1>
+                <p className="text-gray-500 font-medium ml-4 uppercase tracking-widest text-sm flex items-center gap-2">
+                    {user.role} <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Authorized
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100">
+                    <div className="flex items-center gap-4 mb-2">
+                        <div className="p-2.5 bg-white shadow-sm rounded-xl text-indigo-600">
+                            <Mail size={20} />
+                        </div>
+                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest">Email Address</h3>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900 mt-2 pl-[3.25rem] truncate">{user.email}</p>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Account Type</label>
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600 capitalize flex items-center justify-between">
-                    <span>{user.role} Account</span>
-                    <Badge variant="success">Active</Badge>
-                  </div>
+                <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100">
+                    <div className="flex items-center gap-4 mb-2">
+                        <div className="p-2.5 bg-white shadow-sm rounded-xl text-fuchsia-600">
+                            <Shield size={20} />
+                        </div>
+                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest">Security Level</h3>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900 mt-2 pl-[3.25rem] capitalize">{user.role} Clearances</p>
                 </div>
+            </div>
 
-                <div className="pt-4 flex items-center justify-between border-t border-gray-50">
-                  <Button variant="secondary" onClick={handleLogout} className="text-red-600 hover:bg-red-50 hover:text-red-700 border-none px-0 shadow-none hover:shadow-none bg-transparent">
-                    <LogOut size={16} className="mr-2" /> Sign Out
-                  </Button>
-                  <Button disabled>Save Changes</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+            <button 
+                onClick={handleLogout}
+                className="w-full sm:w-auto px-8 py-4 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-2xl font-bold transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow-xl hover:shadow-red-500/20"
+            >
+                <LogOut size={20} /> Terminate Session
+            </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
