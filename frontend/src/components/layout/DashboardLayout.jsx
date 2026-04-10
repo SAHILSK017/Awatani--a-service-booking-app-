@@ -11,7 +11,7 @@ export const DashboardLayout = ({ children, user }) => {
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       <Sidebar role={user?.role} />
       
-      <div className="md:ml-64 flex flex-col min-h-screen transition-all duration-300">
+      <div className="md:ml-72 flex flex-col min-h-screen transition-all duration-300">
         <TopNavbar user={user} />
         
         <main className="flex-1 p-6 sm:p-8 overflow-x-hidden">

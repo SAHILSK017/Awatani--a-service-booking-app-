@@ -6,98 +6,105 @@ import { motion } from 'framer-motion';
 import { getWorkerBookings } from '../../services/bookingService';
 
 const WorkerEarnings = () => {
-  const [completedJobs, setCompletedJobs] = useState([]);
+  const [historyJobs, setHistoryJobs] = useState([]);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const jobsData = await getWorkerBookings();
-      const currentUser = JSON.parse(localStorage.getItem('user'));
-      
-      let sum = 0;
-      const history = jobsData.filter(job => {
-          if (job.worker?._id === currentUser.id && job.status === 'completed') {
-              sum += job.service?.price || 0;
-              return true;
-          }
-          return false;
-      });
-
-      setTotalEarnings(sum);
-      setCompletedJobs(history);
-    } catch (err) {
-      console.error("Failed to load worker earnings", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchData();
+      const fetchData = async () => {
+          try {
+              setLoading(true);
+              const jobsData = await getWorkerBookings();
+              const currentUser = JSON.parse(localStorage.getItem('user'));
+              let earnings = 0;
+              const completed = jobsData.filter(job => {
+                  if (job.worker?._id === currentUser.id && job.status === 'completed') {
+                      earnings += job.service?.price || 0;
+                      return true;
+                  }
+                  return false;
+              });
+              setHistoryJobs(completed.reverse());
+              setTotalEarnings(earnings);
+          } catch (err) { console.error(err); } finally { setLoading(false); }
+      };
+      fetchData();
   }, []);
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-indigo-600 h-8 w-8" /></div>;
-  }
+  if (loading) return <div className="flex justify-center items-center h-screen bg-gray-50"><Loader2 className="animate-spin text-indigo-600 h-10 w-10" /></div>;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Earnings</h1>
-        <p className="text-gray-500 text-sm mt-1">Detailed breakdown of your completed job revenues.</p>
-      </div>
-
-      <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-          <Card className="bg-gradient-to-r from-gray-900 to-indigo-900 text-white">
-              <CardContent className="p-8 flex items-center justify-between">
-                  <div>
-                      <p className="text-gray-300 font-medium mb-1">Total Verified Earnings</p>
-                      <h2 className="text-4xl font-extrabold">₹{totalEarnings}</h2>
-                  </div>
-                  <div className="p-4 bg-white/10 rounded-full">
-                      <IndianRupee size={40} className="text-yellow-400" />
-                  </div>
-              </CardContent>
-          </Card>
-      </motion.div>
-
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"><CalendarCheck size={20} /> Transaction Ledger</h2>
-        <Card className="overflow-hidden">
-            <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
-                        <tr>
-                            <th className="px-6 py-4 font-medium">Service Name</th>
-                            <th className="px-6 py-4 font-medium">Date Completed</th>
-                            <th className="px-6 py-4 font-medium">Status</th>
-                            <th className="px-6 py-4 font-medium text-right">Amount Earned</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
-                        {completedJobs.map(job => (
-                            <tr key={job._id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="px-6 py-4 font-medium text-gray-900">{job.service?.name}</td>
-                                <td className="px-6 py-4 text-gray-500">
-                                    {new Date(job.updatedAt || job.createdAt).toLocaleDateString()}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <Badge variant="success">Paid</Badge>
-                                </td>
-                                <td className="px-6 py-4 text-right font-bold text-green-600">
-                                    +₹{job.service?.price}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {completedJobs.length === 0 && <div className="p-8 text-center text-gray-500">No earnings recorded yet.</div>}
+      <div className="min-h-screen bg-gray-50 text-gray-900 pb-20 font-sans">
+          
+          {/* Light Header */}
+          <div className="relative h-72 w-full bg-slate-900 overflow-hidden flex items-center justify-center mb-10 shadow-lg">
+            <div className="absolute inset-0">
+                <img src="/customer_hero.png" alt="Premium Header" className="w-full h-full object-cover opacity-50 mix-blend-overlay filter blur-[2px]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-indigo-900/60" />
             </div>
-        </Card>
+            <div className="relative z-10 w-full max-w-5xl mx-auto px-6 text-left pt-10">
+                <h1 className="text-4xl font-extrabold tracking-tight mb-2 text-gray-900">Revenue Stream</h1>
+                <p className="text-indigo-900 font-medium">Verified capital generation generated by your terminal.</p>
+            </div>
+          </div>
+
+          <div className="max-w-5xl mx-auto px-6 relative z-20 -mt-16">
+              
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-10">
+                  <div className="bg-indigo-600 rounded-[2.5rem] shadow-2xl p-10 flex flex-col md:flex-row items-center justify-between overflow-hidden relative">
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500 rounded-full blur-3xl mix-blend-screen opacity-50" />
+                      <div className="relative z-10">
+                          <p className="text-indigo-100 font-bold uppercase tracking-widest mb-2">Total Verified Earnings</p>
+                          <h2 className="text-6xl font-black text-white">₹{totalEarnings}</h2>
+                      </div>
+                      <div className="p-6 bg-white/10 rounded-3xl backdrop-blur-xl border border-white/20 mt-6 md:mt-0 relative z-10 shadow-inner">
+                          <IndianRupee size={48} className="text-amber-300" />
+                      </div>
+                  </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                  <h3 className="text-2xl font-extrabold text-gray-900 mb-6 flex items-center gap-3">
+                      <CalendarCheck className="text-indigo-500" /> Payment Lifecycle
+                  </h3>
+                  
+                  <div className="bg-white/90 backdrop-blur-xl border border-white/50 rounded-3xl overflow-hidden shadow-xl">
+                      <div className="overflow-x-auto">
+                          <table className="w-full text-left font-medium">
+                              <thead className="bg-gray-50 text-gray-400 text-xs uppercase tracking-widest border-b border-gray-100 font-bold">
+                                  <tr>
+                                      <th className="px-6 py-4">Transaction ID Payload</th>
+                                      <th className="px-6 py-4">Date Authorized</th>
+                                      <th className="px-6 py-4">State</th>
+                                      <th className="px-6 py-4 text-right">Credit</th>
+                                  </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-50">
+                                  {historyJobs.map((job) => (
+                                      <tr key={job._id} className="hover:bg-gray-50 transition-colors">
+                                          <td className="px-6 py-5">
+                                              <div className="text-gray-900 font-bold text-lg">{job.service?.name || "Service Payload"}</div>
+                                              <div className="text-gray-400 text-xs font-mono mt-1">{job._id}</div>
+                                          </td>
+                                          <td className="px-6 py-5 text-gray-500">
+                                              {new Date(job.updatedAt || job.createdAt).toLocaleDateString()}
+                                          </td>
+                                          <td className="px-6 py-5">
+                                              <Badge variant="success" className="bg-emerald-100 text-emerald-700 shadow-sm px-3 py-1 font-bold">Paid</Badge>
+                                          </td>
+                                          <td className="px-6 py-5 text-right font-black text-xl text-emerald-600">
+                                              +₹{job.service?.price}
+                                          </td>
+                                      </tr>
+                                  ))}
+                              </tbody>
+                          </table>
+                          {historyJobs.length === 0 && <div className="p-12 text-center text-gray-500 font-bold text-lg">No revenue generated yet.</div>}
+                      </div>
+                  </div>
+              </motion.div>
+          </div>
       </div>
-    </div>
   );
 };
 

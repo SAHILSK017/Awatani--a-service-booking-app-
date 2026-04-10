@@ -51,49 +51,49 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-white font-sans text-gray-900">
+    <div className="min-h-screen w-full flex bg-indigo-50 font-sans text-gray-900">
       {/* Left Column - Graphic/Branding */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-[#1e1b4b] items-end p-20">
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-slate-900 items-center justify-center p-20">
         
-        {/* Abstract Background Shapes */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-            <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[120px]" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-600/30 blur-[150px]" />
-            <div className="absolute top-[40%] left-[60%] w-[300px] h-[300px] rounded-full bg-fuchsia-500/20 blur-[100px]" />
+        {/* Immersive Background Image */}
+        <div className="absolute inset-0 z-0">
+            <img src="/customer_hero.png" alt="Service Booking Platform" className="w-full h-full object-cover opacity-50 mix-blend-overlay filter blur-[2px]" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-950 via-purple-950/80 to-transparent" />
         </div>
 
-        {/* Branding text overlay */}
+        {/* Abstract Floating UI Elements (Background) */}
+        <div className="absolute top-0 w-full h-full overflow-hidden z-0 opacity-40">
+            <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="absolute top-[20%] left-[10%] w-[120px] h-[120px] rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 transform rotate-12" />
+        </div>
+
+        {/* Simplistic Branding Text */}
         <div className="relative z-10 w-full max-w-xl text-white">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full border border-white/20 bg-white/10 backdrop-blur-md">
-                    <Sparkles size={14} className="text-purple-300" />
-                    <span className="text-xs font-semibold tracking-wide text-purple-100 uppercase">Premium SaaS Architecture</span>
-                </div>
-                <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-                    Redefining the way <br/>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">
-                        services connect.
-                    </span>
+            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}>
+                
+                <h1 className="text-6xl lg:text-[5.5rem] font-black leading-none tracking-tighter mb-8 drop-shadow-2xl">
+                    Avatani
                 </h1>
-                <p className="text-lg text-indigo-100/80 leading-relaxed font-light border-l-4 border-purple-500 pl-4 py-1">
-                    Avatani bridges the gap between professionals and consumers through lightning-fast routing, seamless transactions, and enterprise-grade security.
-                </p>
-                <div className="mt-12 flex items-center gap-4">
-                    <div className="flex -space-x-3">
-                        <img className="w-10 h-10 rounded-full border-2 border-indigo-900" src="https://i.pravatar.cc/100?img=1" alt="avatar" />
-                        <img className="w-10 h-10 rounded-full border-2 border-indigo-900" src="https://i.pravatar.cc/100?img=5" alt="avatar" />
-                        <img className="w-10 h-10 rounded-full border-2 border-indigo-900" src="https://i.pravatar.cc/100?img=8" alt="avatar" />
-                    </div>
-                    <div className="text-sm font-medium text-indigo-200">
-                        Join <span className="text-white font-bold">10,000+</span> users worldwide
-                    </div>
+                
+                <div className="bg-white/10 backdrop-blur-lg border-l-4 border-indigo-400 p-6 rounded-r-3xl shadow-xl max-w-md">
+                    <p className="text-2xl text-indigo-50 leading-snug font-medium">
+                        A fast and reliable service booking platform.
+                    </p>
                 </div>
+
             </motion.div>
         </div>
       </div>
 
       {/* Right Column - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-24 relative">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-24 relative bg-indigo-50 z-10 shadow-[-20px_0_40px_rgb(0,0,0,0.05)]">
+        
+        {/* Abstract S-Curve Divider overlaying the left column */}
+        <div className="hidden lg:block absolute left-0 top-0 h-full w-[150px] -translate-x-[99%] text-indigo-50 pointer-events-none">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full fill-current">
+                <path d="M100 0 C0 30, 100 70, 0 100 L100 100 Z"></path>
+            </svg>
+        </div>
+
         <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
