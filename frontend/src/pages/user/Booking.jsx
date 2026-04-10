@@ -43,10 +43,10 @@ const Booking = () => {
       setCategories(catRes || []);
 
       // 🔥 FROM NAVIGATION (IMPORTANT)
-      if (location.state?.service) {
+      if (location.state?.selectedService || location.state?.service) {
         setFormData(prev => ({
           ...prev,
-          service: location.state.service._id
+          service: (location.state.selectedService || location.state.service)._id
         }));
       }
 
@@ -70,15 +70,16 @@ const Booking = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.service || !formData.address) {
-      alert("Please fill required fields");
+    if (!formData.service || !formData.address || !formData.date || !formData.time) {
+      alert("Please fill all required fields including Date and Time");
       return;
     }
 
     setSubmitLoading(true);
 
     try {
-      await createBooking(formData.service, formData.address);
+      const combinedDateTime = new Date(`${formData.date}T${formData.time}`).toISOString();
+      await createBooking(formData.service, formData.address, combinedDateTime);
       navigate('/user/mybookings');
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -145,24 +146,52 @@ const Booking = () => {
               </p>
 
               {/* FORM */}
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} className="mt-8">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Service Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      className="w-full rounded-2xl bg-gray-50/50 border border-gray-200 p-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-gray-900"
+                    />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Service Time</label>
+                    <input
+                      type="time"
+                      required
+                      value={formData.time}
+                      onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                      className="w-full rounded-2xl bg-gray-50/50 border border-gray-200 p-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-gray-900"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1 mb-6">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Service Location</label>
 
                 <textarea
                   required
-                  placeholder="Enter address"
+                  placeholder="Enter your accurate location address..."
                   value={formData.address}
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  className="w-full border p-3 mb-4 rounded"
+                  className="w-full min-h-[120px] rounded-2xl bg-gray-50/50 border border-gray-200 p-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-gray-900 resize-none"
                 />
+                </div>
 
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="w-full bg-blue-500 text-white py-3 rounded"
+                  className="w-full bg-indigo-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 hover:shadow-indigo-600/40 transition-all active:scale-[0.98]"
                 >
-                  {submitLoading ? "Booking..." : "Confirm Booking"}
+                  {submitLoading ? "Processing Booking..." : "Confirm Booking"}
                 </button>
 
               </form>

@@ -1,10 +1,11 @@
 import api from './api.js';
 
 // CREATE BOOKING
-export const createBooking = async (serviceId, address) => {
+export const createBooking = async (serviceId, address, bookingDate) => {
   const response = await api.post('/bookings', {
     service: serviceId,
     address,
+    bookingDate,
   });
   return response.data;
 };

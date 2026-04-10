@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 exports.protect = (req, res, next) => {
   let token;
 
-  // token header se lo
+  // token
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")

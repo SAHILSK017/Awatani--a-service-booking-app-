@@ -1,7 +1,7 @@
 const Booking = require("../models/Booking");
 const Service = require("../models/Service");
 
-// ================= CREATE BOOKING =================
+//  CREATE BOOKING 
 exports.createBooking = async (req, res) => {
   try {
     const { service, address, bookingDate } = req.body;
@@ -34,7 +34,7 @@ exports.createBooking = async (req, res) => {
   }
 };
 
-// ================= USER BOOKINGS =================
+//  USER BOOKINGS 
 exports.getMyBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user.id })
@@ -47,7 +47,7 @@ exports.getMyBookings = async (req, res) => {
   }
 };
 
-// ================= WORKER BOOKINGS (MAIN FIX) =================
+// WORKER BOOKINGS (
 exports.getWorkerBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({
@@ -66,7 +66,7 @@ exports.getWorkerBookings = async (req, res) => {
   }
 };
 
-// ================= ACCEPT =================
+// ACCEPT 
 exports.acceptBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -96,7 +96,7 @@ exports.acceptBooking = async (req, res) => {
   }
 };
 
-// ================= COMPLETE =================
+//  COMPLETE 
 exports.completeBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);

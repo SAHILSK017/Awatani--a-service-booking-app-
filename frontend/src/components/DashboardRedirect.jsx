@@ -8,7 +8,7 @@ const DashboardRedirect = () => {
 
   if (loading) return <Loader />;
 
-  // 🔥 Correct condition
+  //  Correct condition
   if (!user) {
     return <Navigate to="/login" replace />;
   }
