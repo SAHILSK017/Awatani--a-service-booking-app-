@@ -35,6 +35,29 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+
+    // Premium Additions
+    urgency: {
+      type: String,
+      enum: ["standard", "priority", "express"],
+      default: "standard",
+    },
+
+    notes: {
+      type: String,
+      default: "",
+    },
+
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "upi", "card"],
+      default: "cash",
+    },
+
+    discountCode: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

@@ -58,7 +58,7 @@ const Profile = () => {
                     {user.name}
                 </h1>
                 <p className="text-gray-500 font-medium ml-4 uppercase tracking-widest text-sm flex items-center gap-2">
-                    {user.role} <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Authorized
+                    {user.role} <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Active
                 </p>
             </div>
 
@@ -78,9 +78,9 @@ const Profile = () => {
                         <div className="p-2.5 bg-white shadow-sm rounded-xl text-fuchsia-600">
                             <Shield size={20} />
                         </div>
-                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest">Security Level</h3>
+                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest">Account Role</h3>
                     </div>
-                    <p className="text-lg font-bold text-gray-900 mt-2 pl-[3.25rem] capitalize">{user.role} Clearances</p>
+                    <p className="text-lg font-bold text-gray-900 mt-2 pl-[3.25rem] capitalize">{user.role} Access</p>
                 </div>
             </div>
 
@@ -88,7 +88,7 @@ const Profile = () => {
                 onClick={handleLogout}
                 className="w-full sm:w-auto px-8 py-4 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-2xl font-bold transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow-xl hover:shadow-red-500/20"
             >
-                <LogOut size={20} /> Terminate Session
+                <LogOut size={20} /> Log Out
             </button>
         </div>
       </motion.div>

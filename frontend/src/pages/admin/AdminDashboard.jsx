@@ -35,7 +35,7 @@ const AdminDashboard = () => {
 
   const statCards = [
     { title: 'Platform Users', value: stats.totalUsers, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-100' },
-    { title: 'Workforce Hub', value: stats.totalWorkers, icon: Briefcase, color: 'text-purple-600', bg: 'bg-purple-100' },
+    { title: 'Workers', value: stats.totalWorkers, icon: Briefcase, color: 'text-purple-600', bg: 'bg-purple-100' },
     { title: 'Active Services', value: stats.activeServices, icon: Activity, color: 'text-sky-600', bg: 'bg-sky-100' },
     { title: 'Gross Revenue', value: `₹${stats.totalRevenue}`, icon: IndianRupee, color: 'text-emerald-600', bg: 'bg-emerald-100' },
   ];
@@ -48,15 +48,15 @@ const AdminDashboard = () => {
       {/* Light Mode Command Header */}
       <div className="relative h-96 w-full overflow-hidden shadow-xl mb-12">
         <div className="absolute inset-0">
-            <img src="/customer_hero.png" alt="Admin Master Node" className="w-full h-full object-cover opacity-60 mix-blend-overlay filter blur-[1px]" />
+            <img src="/customer_hero.png" alt="Admin Dashboard" className="w-full h-full object-cover opacity-60 mix-blend-overlay filter blur-[1px]" />
             <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-indigo-900/60" />
         </div>
         
         <div className="absolute bottom-12 left-10 z-10 w-full max-w-7xl px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <span className="px-4 py-1.5 bg-white/40 backdrop-blur-md rounded-full text-xs font-black tracking-widest text-indigo-900 mb-4 inline-block shadow-sm">SYSTEM ADMINISTRATOR</span>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-gray-900 drop-shadow-sm leading-none mb-3">Master Control Node</h1>
-            <p className="text-lg text-indigo-900 font-medium max-w-xl">Centralized telemetry and structural oversight for the infrastructure.</p>
+            <span className="px-4 py-1.5 bg-white/40 backdrop-blur-md rounded-full text-xs font-black tracking-widest text-indigo-900 mb-4 inline-block shadow-sm">ADMIN PANEL</span>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-gray-900 drop-shadow-sm leading-none mb-3">Admin Dashboard</h1>
+            <p className="text-lg text-indigo-900 font-medium max-w-xl">Manage users, workers, services, and platform activity.</p>
           </motion.div>
         </div>
       </div>
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
               <div className="bg-white rounded-[2rem] overflow-hidden border border-gray-50 shadow-sm">
                   <table className="w-full text-sm text-left">
                     <thead className="bg-gray-50 text-gray-400 text-xs uppercase tracking-widest font-bold">
-                      <tr><th className="px-6 py-4">Data Profile</th><th className="px-6 py-4 text-right">Clearance</th></tr>
+                      <tr><th className="px-6 py-4">User</th><th className="px-6 py-4 text-right">Role</th></tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 font-medium">
                       {usersList.map((user) => (
@@ -108,13 +108,13 @@ const AdminDashboard = () => {
           {/* Light Table: Workers */}
           <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className="bg-white/80 backdrop-blur-xl border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl">
             <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white/50">
-              <h3 className="text-xl font-extrabold text-gray-900 flex items-center gap-3"><Briefcase className="text-purple-600"/> Operational Forces</h3>
+              <h3 className="text-xl font-extrabold text-gray-900 flex items-center gap-3"><Briefcase className="text-purple-600"/> Top Workers</h3>
             </div>
             <div className="p-6">
                <div className="bg-white rounded-[2rem] overflow-hidden border border-gray-50 shadow-sm">
                   <table className="w-full text-sm text-left">
                     <thead className="bg-gray-50 text-gray-400 text-xs uppercase tracking-widest font-bold">
-                      <tr><th className="px-6 py-4">Node Profile</th><th className="px-6 py-4 text-center">Executed</th></tr>
+                      <tr><th className="px-6 py-4">Worker</th><th className="px-6 py-4 text-center">Jobs Done</th></tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 font-medium">
                       {workersList.map((worker) => (

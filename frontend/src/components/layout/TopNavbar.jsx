@@ -28,7 +28,7 @@ export const TopNavbar = ({ user }) => {
           <Search size={18} className={`transition-colors ${isSearchFocused ? 'text-indigo-500' : 'text-gray-400'}`} />
           <input 
             type="text" 
-            placeholder="Search operations, analytics, profiles..." 
+            placeholder="Search..." 
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
             className="w-full bg-transparent border-none outline-none text-sm font-medium text-gray-900 placeholder:text-gray-400"
@@ -52,7 +52,7 @@ export const TopNavbar = ({ user }) => {
           {/* Profile Identity Card */}
           <div className="flex items-center gap-4 pl-1">
             <div className="hidden sm:flex flex-col items-end">
-              <span className="text-sm font-extrabold text-gray-900 tracking-tight">{user?.name || 'Authorized User'}</span>
+              <span className="text-sm font-extrabold text-gray-900 tracking-tight">{user?.name || 'User'}</span>
               <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-widest">{user?.role}</span>
             </div>
             
@@ -74,7 +74,7 @@ export const TopNavbar = ({ user }) => {
             <button 
               onClick={handleLogout}
               className="ml-2 p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all group/logout"
-              title="Terminate Session"
+              title="Log Out"
             >
               <LogOut size={20} className="group-hover/logout:-translate-x-0.5 transition-transform" />
             </button>

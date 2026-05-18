@@ -60,7 +60,7 @@ const Home = () => {
               Expert solutions,<br/>at your doorstep.
             </h1>
             <p className="text-xl text-indigo-50 font-medium mb-10 max-w-lg leading-relaxed shadow-sm">
-              Connect instantly with highly-rated professionals for immediate dispatch and guaranteed quality.
+              Connect instantly with highly-rated professionals for quick booking and guaranteed quality.
             </p>
           </motion.div>
         </div>
@@ -74,7 +74,7 @@ const Home = () => {
           >
             {[
               { title: 'Verified Pros', icon: Shield, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-              { title: 'Instant Dispatch', icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50' },
+              { title: 'Quick Booking', icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50' },
               { title: 'Secure Payments', icon: IndianRupee, color: 'text-emerald-600', bg: 'bg-emerald-50' },
             ].map((feature, idx) => (
               <motion.div key={idx} variants={itemVariants} className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-xl border border-white/50 flex items-center gap-4 hover:shadow-2xl transition-all">

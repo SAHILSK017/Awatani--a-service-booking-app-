@@ -20,8 +20,8 @@ const AuthShell = ({ title, description, children, asideTitle, asideDescription 
             <div className="grid gap-4 sm:grid-cols-3">
               {[
                 ['Bookings', 'Live service tracking'],
-                ['Workers', 'Verified provider operations'],
-                ['Insights', 'One clean control center'],
+                ['Workers', 'Verified service professionals'],
+                ['Insights', 'Simple admin dashboard'],
               ].map(([heading, copy]) => (
                 <div key={heading} className="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
                   <p className="text-lg font-semibold">{heading}</p>

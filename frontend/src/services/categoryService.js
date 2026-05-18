@@ -20,3 +20,7 @@ export const addService = async (data) => {
   return response.data;
 };
 
+export const deleteService = async (id) => {
+  const response = await api.delete(`/service/${id}`);
+  return response.data;
+};

@@ -63,7 +63,7 @@ const AdminAnalytics = () => {
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 text-left pt-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Platform Analytics</h1>
-            <p className="text-indigo-900 font-medium">Real-time graphical telemetry of your business engine.</p>
+            <p className="text-indigo-900 font-medium">Visual overview of bookings, revenue, and service performance.</p>
           </motion.div>
         </div>
       </div>
@@ -72,7 +72,7 @@ const AdminAnalytics = () => {
         
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
             <div className="bg-white/90 backdrop-blur-xl border border-white/50 rounded-3xl p-8 shadow-xl">
-                <h2 className="text-lg font-bold text-gray-900 mb-8 flex items-center gap-3"><span className="w-2 h-6 bg-indigo-500 rounded-full" /> Revenue Trajectory</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-8 flex items-center gap-3"><span className="w-2 h-6 bg-indigo-500 rounded-full" /> Revenue Over Time</h2>
                 <div className="h-80 w-full">
                     {data.earningsTimeline.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
@@ -84,7 +84,7 @@ const AdminAnalytics = () => {
                                 <Line type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={4} dot={{ r: 4, fill: '#4f46e5', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6, fill: '#4f46e5' }} />
                             </LineChart>
                         </ResponsiveContainer>
-                    ) : <div className="h-full flex items-center justify-center text-gray-400 font-medium">Insufficient Data.</div>}
+                    ) : <div className="h-full flex items-center justify-center text-gray-400 font-medium">No revenue data yet.</div>}
                 </div>
             </div>
         </motion.div>
@@ -92,7 +92,7 @@ const AdminAnalytics = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
               <div className="bg-white/90 backdrop-blur-xl border border-white/50 rounded-3xl p-8 shadow-xl">
-                  <h2 className="text-lg font-bold text-gray-900 mb-8 flex items-center gap-3"><span className="w-2 h-6 bg-emerald-500 rounded-full" /> Operational Workload</h2>
+                  <h2 className="text-lg font-bold text-gray-900 mb-8 flex items-center gap-3"><span className="w-2 h-6 bg-emerald-500 rounded-full" /> Bookings by Status</h2>
                   <div className="h-64 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={data.jobStatus} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
@@ -110,7 +110,7 @@ const AdminAnalytics = () => {
 
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
               <div className="bg-white/90 backdrop-blur-xl border border-white/50 rounded-3xl p-8 shadow-xl">
-                  <h2 className="text-lg font-bold text-gray-900 mb-8 flex items-center gap-3"><span className="w-2 h-6 bg-purple-500 rounded-full" /> Service Matrix Allocation</h2>
+                  <h2 className="text-lg font-bold text-gray-900 mb-8 flex items-center gap-3"><span className="w-2 h-6 bg-purple-500 rounded-full" /> Bookings by Category</h2>
                   <div className="h-64 w-full">
                       {data.categoryDistribution.length > 0 ? (
                           <ResponsiveContainer width="100%" height="100%">
@@ -122,7 +122,7 @@ const AdminAnalytics = () => {
                                   <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ color: '#4b5563', fontSize: '12px', fontWeight: 'bold' }}/>
                               </PieChart>
                           </ResponsiveContainer>
-                      ) : <div className="h-full flex items-center justify-center text-gray-400 font-medium">Insufficient Data.</div>}
+                      ) : <div className="h-full flex items-center justify-center text-gray-400 font-medium">No category data yet.</div>}
                   </div>
               </div>
             </motion.div>

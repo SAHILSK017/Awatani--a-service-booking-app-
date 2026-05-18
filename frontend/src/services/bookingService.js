@@ -1,11 +1,15 @@
 import api from './api.js';
 
-// CREATE BOOKING
-export const createBooking = async (serviceId, address, bookingDate) => {
+// CREATE BOOKING WITH PREMIUM FIELDS
+export const createBooking = async (serviceId, address, bookingDate, urgency = "standard", notes = "", paymentMethod = "cash", discountCode = "") => {
   const response = await api.post('/bookings', {
     service: serviceId,
     address,
     bookingDate,
+    urgency,
+    notes,
+    paymentMethod,
+    discountCode,
   });
   return response.data;
 };
@@ -16,7 +20,7 @@ export const getMyBookings = async () => {
   return response.data;
 };
 
-// 🔥 WORKER BOOKINGS (IMPORTANT)
+// WORKER BOOKINGS
 export const getWorkerBookings = async () => {
   const response = await api.get('/bookings/worker');
   return response.data;
@@ -31,5 +35,17 @@ export const acceptBooking = async (id) => {
 // COMPLETE BOOKING
 export const completeBooking = async (id) => {
   const response = await api.put(`/bookings/${id}/complete`);
+  return response.data;
+};
+
+// DELETE/CANCEL PENDING BOOKING
+export const deleteBooking = async (id) => {
+  const response = await api.delete(`/bookings/${id}`);
+  return response.data;
+};
+
+// GET SINGLE BOOKING DETAILS
+export const getBookingDetails = async (id) => {
+  const response = await api.get(`/bookings/${id}`);
   return response.data;
 };

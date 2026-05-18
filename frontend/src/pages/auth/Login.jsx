@@ -15,27 +15,45 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('user'); 
   
+  // Touched state for real-time error displaying
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // REAL-TIME VALIDATION RULES
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const hasMinLength = password.length >= 6;
+  const hasNumber = /\d/.test(password);
+  const hasSpecialOrUpper = /[A-Z]/.test(password) || /[^A-Za-z0-9]/.test(password);
+
+  const isPasswordValid = isLogin ? hasMinLength : (hasMinLength && hasNumber && hasSpecialOrUpper);
+  const isFormValid = isEmailValid && isPasswordValid && (isLogin ? true : name.trim().length > 0);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid) return;
+
     setLoading(true);
     setError(null);
     setSuccess(null);
 
     try {
       if (isLogin) {
-        const user = await login(email, password);
+        const user = await login(email.trim(), password);
         if (user.role === 'admin') navigate('/admin/dashboard');
         else if (user.role === 'worker') navigate('/worker/dashboard');
         else navigate('/user/home');
       } else {
-        await register(name, email, password, role);
+        await register(name.trim(), email.trim(), password, role);
         setSuccess('Registration successful! Please sign in.');
         setIsLogin(true);
+        // Clear password to prompt for login password
+        setPassword('');
+        setPasswordTouched(false);
       }
     } catch (err) {
       setError(err.response?.data?.message || `${isLogin ? 'Login' : 'Registration'} failed. Please try again.`);
@@ -48,6 +66,8 @@ const Login = () => {
     setIsLogin(!isLogin);
     setError(null);
     setSuccess(null);
+    setEmailTouched(false);
+    setPasswordTouched(false);
   };
 
   return (
@@ -113,7 +133,7 @@ const Login = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900 tracking-tight">
               {isLogin ? 'Welcome back' : 'Create account'}
             </h2>
-            <p className="text-gray-500 text-base">
+            <p className="text-gray-500 text-base font-medium">
               {isLogin ? 'Enter your details to access your dashboard.' : 'Start your journey with Avatani today.'}
             </p>
           </div>
@@ -122,7 +142,7 @@ const Login = () => {
             <AnimatePresence mode="wait">
               {error && (
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="p-4 bg-red-50 text-red-700 rounded-2xl text-sm flex items-center gap-3 border border-red-100 font-medium">
+                  <div className="p-4 bg-red-50 text-red-700 rounded-2xl text-sm flex items-center gap-3 border border-red-100 font-bold">
                     <AlertCircle size={18} className="text-red-500 shrink-0" />
                     {error}
                   </div>
@@ -130,7 +150,7 @@ const Login = () => {
               )}
               {success && (
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="p-4 bg-emerald-50 text-emerald-700 rounded-2xl text-sm flex items-center gap-3 border border-emerald-100 font-medium">
+                  <div className="p-4 bg-emerald-50 text-emerald-700 rounded-2xl text-sm flex items-center gap-3 border border-emerald-100 font-bold">
                     <AlertCircle size={18} className="text-emerald-500 shrink-0" />
                     {success}
                   </div>
@@ -152,6 +172,7 @@ const Login = () => {
               </motion.div>
             )}
 
+            {/* EMAIL ADDRESS */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700 ml-1">Email Address</label>
               <Input 
@@ -160,10 +181,27 @@ const Login = () => {
                 placeholder="hello@avatani.com" 
                 required 
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailTouched(true);
+                }}
+                onBlur={() => setEmailTouched(true)}
               />
+              <AnimatePresence>
+                {emailTouched && email.length > 0 && !isEmailValid && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -6 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -6 }} 
+                    className="text-xs text-red-500 font-bold mt-1.5 ml-1 flex items-center gap-1.5"
+                  >
+                    <AlertCircle size={13} className="shrink-0" /> Please enter a valid email format
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
 
+            {/* PASSWORD */}
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
                  <label className="text-sm font-semibold text-gray-700">Password</label>
@@ -175,8 +213,67 @@ const Login = () => {
                 placeholder="••••••••" 
                 required 
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordTouched(true);
+                }}
+                onBlur={() => setPasswordTouched(true)}
               />
+              
+              {/* Login Mode Password Validation */}
+              <AnimatePresence>
+                {isLogin && passwordTouched && password.length > 0 && !hasMinLength && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -6 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -6 }}
+                    className="text-xs text-red-500 font-bold mt-1.5 ml-1 flex items-center gap-1.5"
+                  >
+                    <AlertCircle size={13} className="shrink-0" /> Password must be at least 6 characters
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
+              {/* Register Mode Password Security Specs checklist */}
+              <AnimatePresence>
+                {!isLogin && password.length > 0 && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -8, height: 0 }} 
+                    animate={{ opacity: 1, y: 0, height: 'auto' }} 
+                    exit={{ opacity: 0, y: -8, height: 0 }}
+                    className="mt-3 bg-white border border-gray-100 rounded-2xl p-4 space-y-2 text-xs font-semibold text-gray-400 shadow-sm"
+                  >
+                    <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 block mb-1">Security Specifications</span>
+                    
+                    <div className="flex items-center gap-2">
+                      <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center text-[10px] font-bold border transition-colors ${
+                        hasMinLength ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-gray-50 text-gray-300 border-gray-100'
+                      }`}>
+                        ✓
+                      </div>
+                      <span className={hasMinLength ? 'text-emerald-700 font-bold' : ''}>At least 6 characters long</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center text-[10px] font-bold border transition-colors ${
+                        hasNumber ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-gray-50 text-gray-300 border-gray-100'
+                      }`}>
+                        ✓
+                      </div>
+                      <span className={hasNumber ? 'text-emerald-700 font-bold' : ''}>Contains at least one number (0-9)</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className={`h-4.5 w-4.5 rounded-full flex items-center justify-center text-[10px] font-bold border transition-colors ${
+                        hasSpecialOrUpper ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-gray-50 text-gray-300 border-gray-100'
+                      }`}>
+                        ✓
+                      </div>
+                      <span className={hasSpecialOrUpper ? 'text-emerald-700 font-bold' : ''}>Contains one capital or special character</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {!isLogin && (
@@ -193,7 +290,11 @@ const Login = () => {
               </motion.div>
             )}
 
-            <Button type="submit" className="w-full group py-4 mt-8 rounded-2xl shadow-xl shadow-indigo-600/20 font-bold text-base" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full group py-4 mt-8 rounded-2xl shadow-xl shadow-indigo-600/20 font-bold text-base transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none" 
+              disabled={loading || !isFormValid}
+            >
               {loading ? (
                 <Loader2 className="animate-spin h-5 w-5" />
               ) : (

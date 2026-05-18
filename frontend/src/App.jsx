@@ -5,6 +5,7 @@ import Home from './pages/user/Home';
 import Services from './pages/user/Services';
 import Booking from './pages/user/Booking';
 import MyBookings from './pages/user/MyBookings';
+import BookingDetail from './pages/user/BookingDetail';
 import Profile from './pages/user/Profile';
 import WorkerDashboard from './pages/worker/WorkerDashboard';
 import WorkerAvailableJobs from './pages/worker/WorkerAvailableJobs';
@@ -16,8 +17,18 @@ import ManageWorkers from './pages/admin/ManageWorkers';
 import AdminServices from './pages/admin/AdminServices';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 import ProtectedRoute from './routes/ProtectedRoute';
+import SettingsPage from './pages/shared/SettingsPage';
 
 function App() {
+  React.useEffect(() => {
+    const savedTheme = localStorage.getItem('avatani_theme') || 'light';
+    const root = document.documentElement;
+    root.classList.remove('theme-dark', 'theme-amber');
+    if (savedTheme !== 'light') {
+      root.classList.add(`theme-${savedTheme}`);
+    }
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
@@ -54,6 +65,12 @@ function App() {
         <Route path="/admin/analytics" element={<AdminAnalytics />} />
         {/* Catch-all */}
         <Route path="/admin/*" element={<AdminDashboard />} />
+      </Route>
+
+      {/* Shared Authenticated Routes */}
+      <Route element={<ProtectedRoute allowedRoles={['user', 'worker', 'admin']} />}>
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/booking/:id" element={<BookingDetail />} />
       </Route>
 
       {/* Catch-all */}

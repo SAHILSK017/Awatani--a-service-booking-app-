@@ -39,11 +39,17 @@ export const AuthProvider = ({ children }) => {
   // ✅ REGISTER (AUTO LOGIN)
   const registerUser = async (name, email, password, role) => {
     try {
-      const userData = await register(name, email, password, role);
+      const responseData = await register(name, email, password, role);
 
-      setUser(userData);
+      if (responseData && responseData.token && responseData.user) {
+        localStorage.setItem('token', responseData.token);
+        localStorage.setItem('user', JSON.stringify(responseData.user));
+        setUser(responseData.user);
+        return { success: true, user: responseData.user };
+      }
 
-      return { success: true, user: userData };
+      setUser(responseData);
+      return { success: true, user: responseData };
     } catch (error) {
       return {
         success: false,

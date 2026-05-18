@@ -9,7 +9,7 @@ const categorySchema = new mongoose.Schema(
       trim: true,
     },
     icon: {
-      type: String, // frontend ke liye (optional)
+      type: String, // emoji or icon identifier
     },
   },
   { timestamps: true }
