@@ -13,7 +13,10 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: [
+    process.env.CLIENT_URL || "http://localhost:5173",
+    "https://avatani.vercel.app"
+  ],
   credentials: true,
 }));
 app.use(express.json({ limit: "10mb" }));
